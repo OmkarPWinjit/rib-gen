@@ -1,3 +1,5 @@
+
+//IModuleInfo Interface
 export interface IModuleInfo {
     modules: IModule[]
 }
