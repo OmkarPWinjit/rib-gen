@@ -1,9 +1,10 @@
 
-//IModuleInfo Interface
+//IModuleInfo Interface 
 export interface IModuleInfo {
     modules: IModule[]
 }
 
+// IModule Interface
 export interface IModule {
     id: string
     name: string
