@@ -127,6 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.ViewColumn.One, // Editor column to show the webview
       {
         enableScripts: true, // Allow JavaScript in the webview
+        retainContextWhenHidden: true, // Keep WebView alive
       }
     );
 
@@ -166,7 +167,7 @@ export function activate(context: vscode.ExtensionContext) {
             // console.log('Form submitted with data:', genrateInfo);
             //console.log('Command => ' + );
             const command = genrateCommand(genrateInfo);
-            console.log('Command => ' + command);
+            // console.log('Command => ' + command);
 
             const terminal = vscode.window.createTerminal({
               name: genrateInfo.genrateType + ' Terminal',
@@ -197,7 +198,24 @@ export function activate(context: vscode.ExtensionContext) {
             if (fileUris && fileUris.length > 0) {
               const selectedFile = fileUris[0];  // The user selected a file
               const filePath = selectedFile.fsPath;
+              const document = await vscode.workspace.openTextDocument(fileUris[0]);
+              // const result = await vscode.window.showQuickPick(
+              //   ['Yes', 'No'],
+              //   {
+              //     placeHolder: 'Do you want to Open this file?',
+              //   }
+              // );
+              const result = await vscode.window.showInformationMessage(
+                'Do you want to Open this file?',
+                'Yes',
+                'No'
+              );
+              if (result === 'Yes') {
+                vscode.window.showTextDocument(document);
+              }
 
+              // Show the document in a new editor tab
+              //vscode.window.showTextDocument(document);
               // Now you can interact with the selected file, e.g., read its contents
               panel.webview.postMessage({
                 command: 'i18nFilePath',
