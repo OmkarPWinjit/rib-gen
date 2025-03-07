@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { exec } from 'child_process';
+import * as ts from 'typescript';
+import * as fs from 'fs';
 import { IGenrateInfo, IModule, IModuleInfo, ISubmodule } from './interfaces/module.interface';
 let moduleInfo!: IModuleInfo | null;
 let defaultFolderPath = '';
+let terminal: vscode.Terminal | null = null;
 export function activate(context: vscode.ExtensionContext) {
 
   // Register the initial command
@@ -150,6 +152,9 @@ export function activate(context: vscode.ExtensionContext) {
       async message => {
         switch (message.command) {
           case 'close':
+            if (terminal) {
+              terminal.dispose();
+            }
             panel.dispose();
             break;
           case 'refresh':
@@ -160,7 +165,9 @@ export function activate(context: vscode.ExtensionContext) {
               data: moduleInfo
             });
             break;
-
+          case 'validation':
+            vscode.window.showErrorMessage('Please fill in the required fields in the form!');
+            break;
           case 'submit':
 
             const genrateInfo: IGenrateInfo = message.data as IGenrateInfo;
@@ -168,17 +175,39 @@ export function activate(context: vscode.ExtensionContext) {
             //console.log('Command => ' + );
             const command = genrateCommand(genrateInfo);
             // console.log('Command => ' + command);
+            if (!terminal) {
+              terminal = vscode.window.createTerminal({
+                name: genrateInfo.genrateType + ' Terminal',
+                // You can specify the shellPath and shellArgs, but by default, it uses the system shell
+              });
 
-            const terminal = vscode.window.createTerminal({
-              name: genrateInfo.genrateType + ' Terminal',
-              // You can specify the shellPath and shellArgs, but by default, it uses the system shell
-            });
+              // // Send the command to the terminal (for example, 'echo' command)
+              terminal.sendText(command);
 
-            // // Send the command to the terminal (for example, 'echo' command)
-            terminal.sendText(command);
+              // // Optionally, open the terminal in the editor (this will make it visible)
+              terminal.show();
+            } else {
+              // // Send the command to the terminal (for example, 'echo' command)
+              terminal.sendText(command);
+            }
 
-            // // Optionally, open the terminal in the editor (this will make it visible)
-            terminal.show();
+            const result = await vscode.window.showInformationMessage(
+              'Do you want to Close this ?',
+              'Yes',
+              'No'
+            );
+            if (result === 'Yes') {
+              if (terminal) {
+                terminal.dispose();
+              }
+              panel.dispose();
+            } else {
+
+              panel.webview.postMessage({
+                command: 'reset'
+
+              });
+            }
 
             // // You can run more commands in the terminal after it has been created
             // terminal.sendText('ng version');
@@ -232,7 +261,7 @@ export function activate(context: vscode.ExtensionContext) {
             defaultFolderPath = message.data as string;
             const folderPath = 'file:///' + message.data as string;
             const defaultPath = vscode.Uri.parse(folderPath.replaceAll('\\', '/'));
-            const workspaceFolders = vscode.workspace.workspaceFolders;
+
             if (defaultPath) {
               //const workspaceUri = workspaceFolders[0].uri;
               const folderUris = await vscode.window.showOpenDialog({
@@ -499,46 +528,60 @@ export function deactivate() {
   moduleInfo = null;
 }
 
-function getWebviewContent(): string {
-  return `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Input Form</title>
-        </head>
-        <body>
-            <h2>Submit your input:</h2>
-            <form id="myForm">
-                <label for="inputField">Enter something:</label>
-                <input type="text" id="inputField" name="inputField" required>
-                <button type="submit">Submit</button>
-            </form>
+function getClassNames(filePath: string): string[] {
+  // Read the content of the TypeScript file
+  const sourceCode = fs.readFileSync(filePath, 'utf8');
 
-            <script>
-                // Prevent default form submission and send data back to the extension
-                const form = document.getElementById('myForm');
-                form.onsubmit = function(event) {
-                    event.preventDefault(); // Prevent default form submission
+  // Parse the TypeScript code into an AST
+  const sourceFile = ts.createSourceFile(filePath, sourceCode, ts.ScriptTarget.Latest, true);
 
-                    const input = document.getElementById('inputField').value;
+  // Array to store the class names
+  const classNames: string[] = [];
 
-                    // Check if input is not empty before sending
-                    if (input.trim()) {
-                        vscode.postMessage({
-                            command: 'submit', // Message command
-                            input: input // Send the input field value to the extension
-                        });
-                    } else {
-                        vscode.postMessage({
-                            command: 'submit', // Message command
-                            input: '' // Send empty if no input is provided
-                        });
-                    }
-                };
-            </script>
-        </body>
-        </html>
-    `;
+  // Function to traverse the AST and find classes
+  function visit(node: ts.Node) {
+    if (ts.isClassDeclaration(node)) {
+      // If it's a class declaration, push the name to the array
+      if (node.name) {
+        classNames.push(node.name.text);
+      }
+    }
+
+    // Visit all the child nodes
+    ts.forEachChild(node, visit);
+  }
+
+  // Start traversing from the root node
+  visit(sourceFile);
+
+  return classNames;
 }
+
+function getInterfaceNames(filePath: string): string[] {
+  // Read the content of the TypeScript file
+  const fs = require('fs');
+  const sourceCode = fs.readFileSync(filePath, 'utf8');
+
+  // Parse the TypeScript code into an AST
+  const sourceFile = ts.createSourceFile(filePath, sourceCode, ts.ScriptTarget.Latest, true);
+
+  // Array to store the interface names
+  const interfaceNames: string[] = [];
+
+  // Function to traverse the AST and find interfaces
+  function visit(node: ts.Node) {
+    if (ts.isInterfaceDeclaration(node)) {
+      // If it's an interface declaration, push the name to the array
+      interfaceNames.push(node.name.text);
+    }
+
+    // Visit all the child nodes
+    ts.forEachChild(node, visit);
+  }
+
+  // Start traversing from the root node
+  visit(sourceFile);
+
+  return interfaceNames;
+}
+

@@ -46,7 +46,7 @@
         <h2>RIB Generator</h2>
 
         <form id="containerGenerator">
-            <label for="ddlGenratorType">Select Generator Type:</label>
+            <label for="ddlGenratorType">Select Generator Type <span style="color: red;"> * (required)</span></label>
             <select id="ddlGenratorType" name="ddlGenratorType" required>
                 <option value="preload-module">Preload Module </option>
                 <option value="content-module">Content Module </option>
@@ -65,15 +65,15 @@
 
             </select>
 
-            <label for="txtName">Name:</label>
+            <label for="txtName">Name <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="txtName" name="txtName" required>
 
-            <label for="ddlModule">Select Module:</label>
+            <label for="ddlModule">Select Module <span style="color: red;"> * (required)</span>:</label>
             <select id="ddlModule" name="ddlModule" required>
                 <!-- First dropdown options will be populated here -->
             </select>
 
-            <label for="ddlSubModule">Select submodule:</label>
+            <label for="ddlSubModule">Select submodule <span style="color: red;"> * (required)</span>:</label>
             <select id="ddlSubModule" name="ddlSubModule" required>
                 <!-- Second dropdown options will be populated dynamically based on the first dropdown -->
             </select>
@@ -109,27 +109,27 @@
                 <Span id="browseFolderPath" style="margin:5px 0px;"></Span>
             </div>
 
-            <label for="uuid">Uuid:</label>
+            <label for="uuid">Uuid <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="uuid" name="uuid" required>
 
-            <label for="permission">Permission:</label>
+            <label for="permission">Permission <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="permission" name="permission" required>
 
-            <label for="pKey1Field">pKey1Field:</label>
+            <label for="pKey1Field">pKey1Field <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="pKey1Field" name="pKey1Field" required>
 
-            <label for="sectionId">sectionId:</label>
+            <label for="sectionId">sectionId <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="sectionId" name="pKey1Field" required>
 
-            <label for="gridTitle">Grid Title:</label>
+            <label for="gridTitle">Grid Title <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="gridTitle" name="gridTitle" required>
 
 
-            <label for="gridName">Grid Name:</label>
+            <label for="gridName">Grid Name <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="gridName" name="gridName" required>
 
 
-            <label for="gridUuid">Grid uuid:</label>
+            <label for="gridUuid">Grid uuid <span style="color: red;"> * (required)</span>:</label>
             <input type="text" id="gridUuid" name="gridUuid" required>
 
             <label for="formTitle">Form Title:</label>
@@ -142,7 +142,7 @@
 
 
 
-            <label for="ddlEntityType">Select Entity Type:</label>
+            <label for="ddlEntityType">Select Entity Type <span style="color: red;"> * (required)</span>:</label>
             <select id="ddlEntityType" name="ddlEntityType" required>
                 <option value="flatRootItem">flatRootItem</option>
                 <option value="flatNodeItem">flatNodeItem</option>
@@ -189,6 +189,84 @@
             const ddlModule = document.getElementById("ddlModule");
             const ddlSubModule = document.getElementById("ddlSubModule");
             const ddlEntityType = document.getElementById("ddlEntityType");
+            const genratorData = [
+                {
+                    name: 'preload-module',
+                    control: ['txtName'],
+                    validateControl: ['txtName']
+                },
+                {
+                    name: 'content-module',
+                    control: ['txtName', 'ddlModule', 'i18nfilePath', 'i18nfile'],
+                    validateControl: ['txtName', 'ddlModule']
+                },
+                {
+                    name: 'entity-genrator',
+                    control: ['gridTitle', 'gridName', 'gridUuid'
+                        , 'formTitle', 'formUuid',
+                        'ddlModule', 'ddlSubModule', 'ddlEntityType'
+                    ],
+                    validateControl: ['gridTitle', 'gridName', 'gridUuid', 'ddlModule', 'ddlSubModule', 'ddlEntityType']
+                },
+                {
+                    name: 'component-genrator',
+                    control: ['txtName', 'ddlStyleType', 'ddlNoStoryType',
+                        'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'container-genrator',
+                    control: ['txtName', 'ddlStyleType', 'ddlNoStoryType',
+                        'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName',]
+                },
+                {
+                    name: 'class-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'enum-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'interface-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'pipe-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'service-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'translation-entity-genrator',
+                    control: ['uuid', 'ddlModule', 'ddlSubModule'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'uuid']
+                },
+                {
+                    name: 'auxiliary-module-genrator',
+                    control: ['ddlModule', 'ddlSubModule', 'i18nfilePath', 'i18nfile'],
+                    validateControl: ['ddlModule', 'ddlSubModule']
+                },
+                {
+                    name: 'characteristics-entity-genrator',
+                    control: ['txtName', 'uuid', 'permission', 'pKey1Field', 'sectionId', 'ddlModule', 'ddlSubModule'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName', 'uuid', 'permission', 'pKey1Field', 'sectionId']
+
+                },
+                {
+                    name: 'pdf-viewer-container-genrator',
+                    control: ['uuid', 'ddlModule', 'ddlSubModule'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'uuid']
+                },
+            ];
             //let timer;
             hideShowEle(ddlGenratorType.value);
             ddlGenratorType.addEventListener('change', () => {
@@ -258,14 +336,24 @@
 
                 // Send data back to VS Code extension
                 //const vscode = acquireVsCodeApi();
-                vscode.postMessage({
-                    command: 'submit',
-                    data: obj
-                });
+                if (isValidate(ddlGenratorType.value)) {
+                    vscode.postMessage({
+                        command: 'submit',
+                        data: obj
+                    });
+                } else {
+                    vscode.postMessage({
+                        command: 'validation',
+                        //data: obj
+                    });
+                }
             });
             window.addEventListener('message', event => {
                 const message = event.data; // The message sent from the extension
                 switch (message.command) {
+                    case 'reset':
+                        reset();
+                        break;
                     case 'populateddlModule':
                         moduleInfo = message.data;
                         setModuleOption();
@@ -351,69 +439,7 @@
                 allControl.forEach((item) => {
                     hideElement(item);
                 })
-                const genratorData = [
-                    {
-                        name: 'preload-module',
-                        control: ['txtName']
-                    },
-                    {
-                        name: 'content-module',
-                        control: ['txtName', 'ddlModule', 'i18nfilePath', 'i18nfile']
-                    },
-                    {
-                        name: 'entity-genrator',
-                        control: ['gridTitle', 'gridName', 'gridUuid'
-                            , 'formTitle', 'formUuid',
-                            'ddlModule', 'ddlSubModule', 'ddlEntityType'
-                        ]
-                    },
-                    {
-                        name: 'component-genrator',
-                        control: ['txtName', 'ddlStyleType', 'ddlNoStoryType',
-                            'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'container-genrator',
-                        control: ['txtName', 'ddlStyleType', 'ddlNoStoryType',
-                            'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'class-genrator',
-                        control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'enum-genrator',
-                        control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'interface-genrator',
-                        control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'pipe-genrator',
-                        control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'service-genrator',
-                        control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder']
-                    },
-                    {
-                        name: 'translation-entity-genrator',
-                        control: ['uuid', 'ddlModule', 'ddlSubModule']
-                    },
-                    {
-                        name: 'auxiliary-module-genrator',
-                        control: ['ddlModule', 'ddlSubModule', 'i18nfilePath', 'i18nfile']
-                    },
-                    {
-                        name: 'characteristics-entity-genrator',
-                        control: ['txtName', 'uuid', 'permission', 'pKey1Field', 'sectionId', 'ddlModule', 'ddlSubModule']
-                    },
-                    {
-                        name: 'pdf-viewer-container-genrator',
-                        control: ['uuid', 'ddlModule', 'ddlSubModule']
-                    },
-                ];
+
                 const showFiled = genratorData.find((x) => x.name === value);
                 if (showFiled) {
                     showFiled.control.forEach((item) => {
@@ -441,7 +467,27 @@
                 }
                 //}
             }
+            function isValidate(name) {
+                let isValid = true;
+                const showFiled = genratorData.find((x) => x.name === name);
+                if (showFiled) {
+                    showFiled.validateControl.forEach((item) => {
+                        if (!validateElement(item)) {
+                            isValid = false;
+                        }
+                    });
+                    return isValid;
 
+                }
+            }
+            function validateElement(id) {
+                const element = document.getElementById(id);
+                if (element.value) {
+                    return true
+                } else {
+                    return false;
+                }
+            }
             function showElement(id) {
                 const element = document.getElementById(id);
                 const labels = document.querySelectorAll('label');
@@ -458,6 +504,25 @@
                 if (id.includes("Path")) {
                     element.innerText = "";
                 }
+            }
+
+            function reset() {
+                // Get all <span> elements
+                const spans = document.querySelectorAll('span');
+
+                // Get all <input> elements
+                const inputs = document.querySelectorAll('input');
+
+                // Convert NodeList to Array (optional, if you prefer working with arrays)
+                const spansArray = Array.from(spans);
+                const inputsArray = Array.from(inputs);
+                spans.forEach(span => {
+                    span.innerText = ""; // Clears the text of each <span>
+                });
+
+                inputs.forEach(input => {
+                    input.value = ""; // Clears the value of each <input>
+                });
             }
 
         });
