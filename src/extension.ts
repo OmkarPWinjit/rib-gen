@@ -6,47 +6,8 @@ import { IGenrateInfo, IModule, IModuleInfo, ISubmodule } from './interfaces/mod
 let moduleInfo!: IModuleInfo | null;
 let defaultFolderPath = '';
 let terminal: vscode.Terminal | null = null;
+
 export function activate(context: vscode.ExtensionContext) {
-
-  // Register the initial command
-  // let disposable = vscode.commands.registerCommand('containercodegen', () => {
-  //     vscode.window.showInformationMessage('Hello World from containercodegen!');
-  // });
-  // context.subscriptions.push(disposable);
-
-  // Register the right-click context menu command to open the HTML form
-  // disposable = vscode.commands.registerCommand('containercodegen.openHtmlForm', async (uri: vscode.Uri) => {
-  //     // Create and show the Webview panel
-  //     const panel = vscode.window.createWebviewPanel(
-  //         'htmlForm', // Identifies the type of the webview panel
-  //         'Input Form', // Title of the webview panel
-  //         vscode.ViewColumn.One, // Column to show the webview in
-  //         {
-  //             enableScripts: true, // Allow JavaScript in webview
-  //         }
-  //     );
-
-  //     // Set the HTML content of the Webview
-  //     panel.webview.html = getWebviewContent();
-
-  //     // Handle messages received from the Webview
-  //     panel.webview.onDidReceiveMessage(
-  //         (message) => {
-  //             switch (message.command) {
-  //                 case 'submit':
-  //                     const inputData = message.input;
-  //                     if (inputData) {
-  //                         vscode.window.showInformationMessage(`User input: ${inputData}`);
-  //                     } else {
-  //                         vscode.window.showInformationMessage('No input provided!');
-  //                     }
-  //                     break;
-  //             }
-  //         },
-  //         undefined,
-  //         context.subscriptions
-  //     );
-  // });
 
 
   let disposable = vscode.commands.registerCommand('rib.gen.container', async () => {
@@ -59,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     // if(vscode.workspace.workspaceFolders){
 
     // }
-    //let moduleInfo!: IModuleInfo;
+
     let modules: IModule[] = [];
     let submodule: ISubmodule[] = [];
     // Use findFiles to get all files matching the pattern
@@ -104,20 +65,11 @@ export function activate(context: vscode.ExtensionContext) {
           modules.push(moduleobj);
         }
 
-        // Check if the search query is in the file text
-        // if (text.includes(searchQuery)) {
-        //   matches++;
-        //   console.log(`Found match in file: ${file.fsPath}`);
-        // }
+
       }
 
       moduleInfo = { modules: modules };
     }
-    // if (matches > 0) {
-    //     vscode.window.showInformationMessage(`${matches} matches found.`);
-    // } else {
-    //     vscode.window.showInformationMessage('No matches found.');
-    // }
 
 
 
@@ -158,7 +110,55 @@ export function activate(context: vscode.ExtensionContext) {
             panel.dispose();
             break;
           case 'refresh':
-            const data = moduleInfo;
+            let modules: IModule[] = [];
+            let submodule: ISubmodule[] = [];
+            // Use findFiles to get all files matching the pattern
+            const files = await vscode.workspace.findFiles(filePattern, '', 0);
+            const dataCount = moduleInfo?.modules.length ?? 0;
+            if (dataCount < files.length) {
+
+
+
+
+              // Loop through the files and search for the text
+              for (const file of files) {
+                const document = await vscode.workspace.openTextDocument(file);
+                const folderPath = path.dirname(file.fsPath);
+                const text = document.getText();
+                const data: { name: string } = JSON.parse(text);
+                let moduledata = data.name.split("-");
+
+                let module = modules.find((x) => x.name === moduledata[1]);
+                if (module) {
+                  let subModule = module.submodule.find((x) => x.name === moduledata[2]);
+                  if (!subModule) {
+                    module.submodule.push({
+                      id: moduledata[2],
+                      name: data.name,
+                      path: folderPath + "\\src\\lib"
+                    });
+                  }
+
+                } else {
+                  let moduleobj: IModule = {
+                    id: moduledata[1],
+                    name: moduledata[1],
+                    submodule: [
+                      {
+                        id: moduledata[2],
+                        name: data.name,
+                        path: folderPath + "\\src\\lib"
+                      }
+                    ]
+                  };
+                  modules.push(moduleobj);
+                }
+
+
+              }
+
+              moduleInfo = { modules: modules };
+            }
             // Refresh the dropdown
             panel.webview.postMessage({
               command: 'populateddlModule',
@@ -177,7 +177,7 @@ export function activate(context: vscode.ExtensionContext) {
             // console.log('Command => ' + command);
             if (!terminal) {
               terminal = vscode.window.createTerminal({
-                name: genrateInfo.genrateType + ' Terminal',
+                name: 'RIB Generator Terminal',
                 // You can specify the shellPath and shellArgs, but by default, it uses the system shell
               });
 
@@ -187,27 +187,24 @@ export function activate(context: vscode.ExtensionContext) {
               // // Optionally, open the terminal in the editor (this will make it visible)
               terminal.show();
             } else {
+
               // // Send the command to the terminal (for example, 'echo' command)
               terminal.sendText(command);
+              terminal.show();
             }
 
-            const result = await vscode.window.showInformationMessage(
-              'Do you want to Close this ?',
-              'Yes',
-              'No'
-            );
-            if (result === 'Yes') {
-              if (terminal) {
-                terminal.dispose();
-              }
-              panel.dispose();
-            } else {
 
-              panel.webview.postMessage({
-                command: 'reset'
 
-              });
-            }
+            panel.webview.postMessage({
+              command: 'reset'
+
+            });
+
+            //panel.dispose();
+
+
+
+
 
             // // You can run more commands in the terminal after it has been created
             // terminal.sendText('ng version');
@@ -292,7 +289,11 @@ export function activate(context: vscode.ExtensionContext) {
       undefined,
       context.subscriptions
     );
+
+
   });
+
+
 
   context.subscriptions.push(disposable);
   context.subscriptions.push(disposable);
