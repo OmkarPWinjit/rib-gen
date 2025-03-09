@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as fs from 'fs';
-import { IGenrateInfo, IModule, IModuleInfo, ISubmodule } from './interfaces/module.interface';
+import { IGenrateInfo, IModule, IModuleInfo, IOtherConfigBrowse, ISubmodule } from './interfaces/module.interface';
 let moduleInfo!: IModuleInfo | null;
 let defaultFolderPath = '';
 let terminal: vscode.Terminal | null = null;
@@ -243,6 +243,10 @@ export function activate(context: vscode.ExtensionContext) {
             // panel.dispose(); // This closes the Webview
 
             break;
+          case 'test':
+            const data1 = message.data;
+            console.log(data1);
+            break;
           case 'Browsei18nFile':
 
             const fileUris = await vscode.window.showOpenDialog({
@@ -255,12 +259,7 @@ export function activate(context: vscode.ExtensionContext) {
               const selectedFile = fileUris[0];  // The user selected a file
               const filePath = selectedFile.fsPath;
               const document = await vscode.workspace.openTextDocument(fileUris[0]);
-              // const result = await vscode.window.showQuickPick(
-              //   ['Yes', 'No'],
-              //   {
-              //     placeHolder: 'Do you want to Open this file?',
-              //   }
-              // );
+
               const result = await vscode.window.showInformationMessage(
                 'Do you want to Open this file?',
                 'Yes',
@@ -278,6 +277,55 @@ export function activate(context: vscode.ExtensionContext) {
               panel.webview.postMessage({
                 command: 'i18nFilePath',
                 data: filePath
+              });
+
+            } else {
+              vscode.window.showInformationMessage('No file selected');
+            }
+            break;
+
+          case 'BrowseOtherConfigFile':
+
+            const data: IOtherConfigBrowse = message.data as IOtherConfigBrowse;
+            const configData = [];
+            const otherConfigFileUris = await vscode.window.showOpenDialog({
+              canSelectFiles: true,
+              canSelectFolders: false,
+              openLabel: 'Select a File',
+            });
+
+            if (otherConfigFileUris && otherConfigFileUris.length > 0) {
+              const selectedFile = otherConfigFileUris[0];  // The user selected a file
+              const filePath = selectedFile.fsPath;
+              const document = await vscode.workspace.openTextDocument(otherConfigFileUris[0]);
+
+
+              // const result = await vscode.window.showInformationMessage(
+              //   'Do you want to Open this file?',
+              //   'Yes',
+              //   'No'
+              // );
+              // if (result === 'Yes') {
+              //   statusBarItem.show();
+              //   vscode.window.showTextDocument(document);
+              //   statusBarItem.hide();
+              // }
+              if (data.type === 'interface') {
+                const interfaceNames = getInterfaceNames(filePath);
+                configData.push(...interfaceNames);
+              } else {
+                const interfaceNames = getClassNames(filePath);
+                configData.push(...interfaceNames);
+              }
+              data.path = filePath;
+              data.names = configData;
+              // Show the document in a new editor tab
+              //vscode.window.showTextDocument(document);
+              // Now you can interact with the selected file, e.g., read its contents
+              panel.webview.postMessage({
+                command: 'otherConfigFilePath',
+                data: data
+
               });
 
             } else {
@@ -375,6 +423,64 @@ function genrateCommand(genrateInfo: IGenrateInfo): string {
       }
       if (genrateInfo.entityType) {
         command += " --entityType=" + genrateInfo.entityType;
+      }
+      if (genrateInfo.isUseOtherConfig) {
+        if (genrateInfo.otherconfig) {
+          if (genrateInfo.otherconfig.entityInfo.path) {
+            command += " --otherconfig.entityInfo.path=" + '"' + genrateInfo.otherconfig.entityInfo.path + '"';
+          }
+          if (genrateInfo.otherconfig.entityInfo.name) {
+            command += " --otherconfig.entityInfo.name=" + genrateInfo.otherconfig.entityInfo.name;
+          }
+
+          if (genrateInfo.otherconfig.pEntityInfo.path) {
+            command += " --otherconfig.pEntityInfo.path=" + '"' + genrateInfo.otherconfig.pEntityInfo.path + '"';
+          }
+          if (genrateInfo.otherconfig.pEntityInfo.name) {
+            command += " --otherconfig.pEntityInfo.name=" + genrateInfo.otherconfig.pEntityInfo.name;
+          }
+
+          if (genrateInfo.otherconfig.completeEntityInfo.path) {
+            command += " --otherconfig.completeEntityInfo.path=" + '"' + genrateInfo.otherconfig.completeEntityInfo.path + '"';
+          }
+          if (genrateInfo.otherconfig.completeEntityInfo.name) {
+            command += " --otherconfig.completeEntityInfo.name=" + genrateInfo.otherconfig.completeEntityInfo.name;
+          }
+
+          if (genrateInfo.otherconfig.pCompleteEntityInfo.path) {
+            command += " --otherconfig.pCompleteEntityInfo.path=" + '"' + genrateInfo.otherconfig.pCompleteEntityInfo.path + '"';
+          }
+          if (genrateInfo.otherconfig.pCompleteEntityInfo.name) {
+            command += " --otherconfig.completeEntityInfo.name=" + genrateInfo.otherconfig.pCompleteEntityInfo.name;
+          }
+
+          if (genrateInfo.otherconfig.parentDataServiceInfo.path) {
+            command += " --otherconfig.parentDataServiceInfo.path=" + '"' + genrateInfo.otherconfig.parentDataServiceInfo.path + '"';
+          }
+          if (genrateInfo.otherconfig.parentDataServiceInfo.name) {
+            command += " --otherconfig.parentDataServiceInfo.name=" + genrateInfo.otherconfig.parentDataServiceInfo.name;
+          }
+
+          if (genrateInfo.otherconfig.dto) {
+            command += " --otherconfig.dto=" + genrateInfo.otherconfig.dto;
+          }
+
+          if (genrateInfo.otherconfig.apiUrl) {
+            command += " --otherconfig.apiUrl=" + genrateInfo.otherconfig.apiUrl;
+          }
+
+          if (genrateInfo.otherconfig.endPoint) {
+            command += " --otherconfig.endPoint=" + genrateInfo.otherconfig.endPoint;
+          }
+
+          if (genrateInfo.otherconfig.usePost) {
+            command += " --otherconfig.usePost=" + genrateInfo.otherconfig.usePost;
+          }
+
+          if (genrateInfo.otherconfig.itemName) {
+            command += " --otherconfig.itemName=" + genrateInfo.otherconfig.itemName;
+          }
+        }
       }
       break;
     case 'component-genrator':
