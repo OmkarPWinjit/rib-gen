@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const panel = vscode.window.createWebviewPanel(
       'containerGenerator', // Identifies the type of the webview. Used internally
-      'Container Generator', // Title of the panel
+      'RIB Generator', // Title of the panel
       vscode.ViewColumn.One, // Editor column to show the webview
       {
         enableScripts: true, // Allow JavaScript in the webview
@@ -322,11 +322,22 @@ export function activate(context: vscode.ExtensionContext) {
               // Show the document in a new editor tab
               //vscode.window.showTextDocument(document);
               // Now you can interact with the selected file, e.g., read its contents
-              panel.webview.postMessage({
-                command: 'otherConfigFilePath',
-                data: data
+              if (configData.length > 0) {
+                panel.webview.postMessage({
+                  command: 'otherConfigFilePath',
+                  data: data
 
-              });
+                });
+              } else {
+                if (data.type === 'interface') {
+                  vscode.window.showErrorMessage('The selected files do not have an interface.');
+                } else {
+                  vscode.window.showErrorMessage('The selected files do not have an class.');
+                }
+
+              }
+
+
 
             } else {
               vscode.window.showInformationMessage('No file selected');
@@ -374,11 +385,36 @@ export function activate(context: vscode.ExtensionContext) {
 
   });
 
-
+  const view = vscode.window.createTreeView('myExtension.view', {
+    treeDataProvider: new MyViewDataProvider()
+  });
+  context.subscriptions.push(view);
 
   context.subscriptions.push(disposable);
   context.subscriptions.push(disposable);
 }
+
+// TreeView DataProvider for the sidebar
+class MyViewDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
+  getTreeItem(element: MyTreeItem): vscode.TreeItem {
+    return element;
+  }
+
+  getChildren(element?: MyTreeItem): Thenable<MyTreeItem[]> {
+    return Promise.resolve([new MyTreeItem('Open Generator')]);
+  }
+}
+
+class MyTreeItem extends vscode.TreeItem {
+  constructor(label: string) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.command = {
+      command: 'rib.gen.container', // Command to execute on click
+      title: 'Open Generator'
+    };
+  }
+}
+
 
 
 function genrateCommand(genrateInfo: IGenrateInfo): string {

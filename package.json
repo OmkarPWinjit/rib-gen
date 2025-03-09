@@ -9,9 +9,29 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:myExtension.view"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "myExtension",
+          "title": "Genrator",
+          "icon": "media/icons1.png"
+        }
+      ]
+    },
+    "views": {
+      "myExtension": [
+        {
+          "id": "myExtension.view",
+          "name": "Shown",
+          "command": "rib.gen.container"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "containercodegen",
@@ -19,7 +39,7 @@
       },
       {
         "command": "rib.gen.container",
-        "title": "genrate rib container"
+        "title": "RIB Genrator"
       }
     ]
   },
