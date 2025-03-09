@@ -11,7 +11,34 @@ export function activate(context: vscode.ExtensionContext) {
 
 
   let disposable = vscode.commands.registerCommand('rib.gen.container', async () => {
+
+    const panel = vscode.window.createWebviewPanel(
+      'containerGenerator', // Identifies the type of the webview. Used internally
+      'Container Generator', // Title of the panel
+      vscode.ViewColumn.One, // Editor column to show the webview
+      {
+        enableScripts: true, // Allow JavaScript in the webview
+        retainContextWhenHidden: true, // Keep WebView alive
+
+      }
+    );
+
+
+    const htmlPath = path.join(context.extensionPath, 'src/webview', 'index.html');
+    const htmlContent = require('fs').readFileSync(htmlPath, 'utf-8');
+
+    // Convert the vscode.Uri to a webview-compatible URI string
+
+    panel.webview.html = htmlContent;
+
     // Search query
+    // Create a status bar item (a loader spinner)
+    let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem.text = '$(loading~spin) Loading...'; // Use the spin icon as a spinner
+    statusBarItem.tooltip = 'Loading...'; // Tooltip for more context
+    statusBarItem.command = 'extension.showMoreInfo'; // Optional: command to run when clicked
+    statusBarItem.show(); // Hide initially
+
     const searchQuery = '"name": "modules-';  // The text you want to search for
     let moduleFolderPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
     moduleFolderPath = moduleFolderPath.replaceAll("\\", "/") + '/libs/modules';
@@ -75,21 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-    const panel = vscode.window.createWebviewPanel(
-      'containerGenerator', // Identifies the type of the webview. Used internally
-      'Container Generator', // Title of the panel
-      vscode.ViewColumn.One, // Editor column to show the webview
-      {
-        enableScripts: true, // Allow JavaScript in the webview
-        retainContextWhenHidden: true, // Keep WebView alive
-      }
-    );
 
-
-    const htmlPath = path.join(context.extensionPath, 'src/webview', 'index.html');
-    const htmlContent = require('fs').readFileSync(htmlPath, 'utf-8');
-
-    panel.webview.html = htmlContent;
 
 
 
@@ -98,11 +111,21 @@ export function activate(context: vscode.ExtensionContext) {
       command: 'populateddlModule',
       data: moduleInfo
     });
-
+    statusBarItem.hide(); // Hide the spinner
 
     panel.webview.onDidReceiveMessage(
       async message => {
         switch (message.command) {
+          case 'panelClose':
+            const result = await vscode.window.showInformationMessage(
+              'Do you want to Open this file?',
+              'Yes',
+              'No'
+            );
+            if (result === 'Yes') {
+              panel.dispose();
+            }
+            break;
           case 'close':
             if (terminal) {
               terminal.dispose();
@@ -110,6 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
             panel.dispose();
             break;
           case 'refresh':
+            statusBarItem.show(); // Show the spinner
             let modules: IModule[] = [];
             let submodule: ISubmodule[] = [];
             // Use findFiles to get all files matching the pattern
@@ -164,12 +188,15 @@ export function activate(context: vscode.ExtensionContext) {
               command: 'populateddlModule',
               data: moduleInfo
             });
+            statusBarItem.hide(); // Hide the spinner
             break;
           case 'validation':
+            statusBarItem.show();
             vscode.window.showErrorMessage('Please fill in the required fields in the form!');
+            statusBarItem.hide();
             break;
           case 'submit':
-
+            statusBarItem.show();
             const genrateInfo: IGenrateInfo = message.data as IGenrateInfo;
             // console.log('Form submitted with data:', genrateInfo);
             //console.log('Command => ' + );
@@ -199,7 +226,9 @@ export function activate(context: vscode.ExtensionContext) {
               command: 'reset'
 
             });
-
+            setTimeout(() => {
+              statusBarItem.hide();
+            }, 3000);
             //panel.dispose();
 
 
@@ -215,6 +244,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             break;
           case 'Browsei18nFile':
+
             const fileUris = await vscode.window.showOpenDialog({
               canSelectFiles: true,
               canSelectFolders: false,
@@ -237,7 +267,9 @@ export function activate(context: vscode.ExtensionContext) {
                 'No'
               );
               if (result === 'Yes') {
+                statusBarItem.show();
                 vscode.window.showTextDocument(document);
+                statusBarItem.hide();
               }
 
               // Show the document in a new editor tab
@@ -267,7 +299,7 @@ export function activate(context: vscode.ExtensionContext) {
                 openLabel: 'Select a Folder',
                 defaultUri: defaultPath
               });
-
+              statusBarItem.show();
               if (folderUris && folderUris.length > 0) {
                 const selectedFile = folderUris[0];  // The user selected a file
                 const folderPath = selectedFile.path;
@@ -282,6 +314,7 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.showInformationMessage('No file selected');
               }
             }
+            statusBarItem.hide();
             break;
 
         }
@@ -298,6 +331,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
   context.subscriptions.push(disposable);
 }
+
 
 function genrateCommand(genrateInfo: IGenrateInfo): string {
   if (genrateInfo.browseFolderPath) {

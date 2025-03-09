@@ -37,16 +37,105 @@
         .innerbutton {
             display: inline-block;
         }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #007acc;
+            /* VS Code blue color */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Container for spinner */
+        .spinner-container {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            /* Align horizontally */
+            align-items: center;
+            /* Align vertically */
+
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007acc;
+            /* VS Code blue color */
+        }
+
+        .button {
+            background-color: #04AA6D;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 9px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .button1:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #04AA6D;
+        }
+
+        .button1 {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .button2:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #008CBA;
+        }
+
+        .button2 {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        .button3:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #f44336;
+        }
+
+        .button3 {
+            background-color: #f44336;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
 
     <div class="form-container">
+
         <h2>RIB Generator</h2>
 
         <form id="containerGenerator">
-            <label for="ddlGenratorType">Select Generator Type <span style="color: red;"> * (required)</span></label>
+            <label for="ddlGenratorType">Select Generator Type <span style="color: red;font-size: large;"> *
+                </span></label>
             <select id="ddlGenratorType" name="ddlGenratorType" required>
                 <option value="preload-module">Preload Module </option>
                 <option value="content-module">Content Module </option>
@@ -65,15 +154,15 @@
 
             </select>
 
-            <label for="txtName">Name <span style="color: red;"> * (required)</span>:</label>
+            <label for="txtName">Name <span style="color: red;"> * </span>:</label>
             <input type="text" id="txtName" name="txtName" required>
 
-            <label for="ddlModule">Select Module <span style="color: red;"> * (required)</span>:</label>
+            <label for="ddlModule">Select Module <span style="color: red;"> * </span>:</label>
             <select id="ddlModule" name="ddlModule" required>
                 <!-- First dropdown options will be populated here -->
             </select>
 
-            <label for="ddlSubModule">Select submodule <span style="color: red;"> * (required)</span>:</label>
+            <label for="ddlSubModule">Select submodule <span style="color: red;"> * </span>:</label>
             <select id="ddlSubModule" name="ddlSubModule" required>
                 <!-- Second dropdown options will be populated dynamically based on the first dropdown -->
             </select>
@@ -109,27 +198,27 @@
                 <Span id="browseFolderPath" style="margin:5px 0px;"></Span>
             </div>
 
-            <label for="uuid">Uuid <span style="color: red;"> * (required)</span>:</label>
+            <label for="uuid">Uuid <span style="color: red;"> * </span>:</label>
             <input type="text" id="uuid" name="uuid" required>
 
-            <label for="permission">Permission <span style="color: red;"> * (required)</span>:</label>
+            <label for="permission">Permission <span style="color: red;"> * </span>:</label>
             <input type="text" id="permission" name="permission" required>
 
-            <label for="pKey1Field">pKey1Field <span style="color: red;"> * (required)</span>:</label>
+            <label for="pKey1Field">pKey1Field <span style="color: red;"> * </span>:</label>
             <input type="text" id="pKey1Field" name="pKey1Field" required>
 
-            <label for="sectionId">sectionId <span style="color: red;"> * (required)</span>:</label>
+            <label for="sectionId">sectionId <span style="color: red;"> * </span>:</label>
             <input type="text" id="sectionId" name="pKey1Field" required>
 
-            <label for="gridTitle">Grid Title <span style="color: red;"> * (required)</span>:</label>
+            <label for="gridTitle">Grid Title <span style="color: red;"> * </span>:</label>
             <input type="text" id="gridTitle" name="gridTitle" required>
 
 
-            <label for="gridName">Grid Name <span style="color: red;"> * (required)</span>:</label>
+            <label for="gridName">Grid Name <span style="color: red;"> * </span>:</label>
             <input type="text" id="gridName" name="gridName" required>
 
 
-            <label for="gridUuid">Grid uuid <span style="color: red;"> * (required)</span>:</label>
+            <label for="gridUuid">Grid uuid <span style="color: red;"> * </span>:</label>
             <input type="text" id="gridUuid" name="gridUuid" required>
 
             <label for="formTitle">Form Title:</label>
@@ -142,7 +231,7 @@
 
 
 
-            <label for="ddlEntityType">Select Entity Type <span style="color: red;"> * (required)</span>:</label>
+            <label for="ddlEntityType">Select Entity Type <span style="color: red;"> * </span>:</label>
             <select id="ddlEntityType" name="ddlEntityType" required>
                 <option value="flatRootItem">flatRootItem</option>
                 <option value="flatNodeItem">flatNodeItem</option>
@@ -154,12 +243,28 @@
 
 
             </select>
+            <div id="spinner">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+
+                </div>
+                <div class="spinner-container">
+                    <div class="message">Please hold on while the loading process is completed...</div>
+                </div>
+            </div>
             <div id="groupbutton">
-                <div class="innerbutton"><button type="button" id="btnRefresh" name="btnRefresh">Refresh</button></div>
-                <div class="innerbutton"><button type="button" id="btnsubmit" name="btnsubmit">Submit</button></div>
-                <div class="innerbutton"><button id="btnCancel">Cancel</button></div>
+
+                <div class="innerbutton"><button type="button" id="btnRefresh" name="btnRefresh"
+                        class="button button2">Refresh </button></div>
+                <div class="innerbutton"><button type="button" id="btnsubmit" name="btnsubmit"
+                        class="button button1">Submit</button></div>
+                <div class="innerbutton"><button id="btnCancel" class="button button3">Cancel</button></div>
             </div>
 
+            <!-- <div class="spinner-container">
+                <div class="spinner"></div>
+                <div class="message">Please wait while we process your request...</div>
+            </div> -->
         </form>
     </div>
 
@@ -189,6 +294,7 @@
             const ddlModule = document.getElementById("ddlModule");
             const ddlSubModule = document.getElementById("ddlSubModule");
             const ddlEntityType = document.getElementById("ddlEntityType");
+            const spinner = document.getElementById("spinner");
             const genratorData = [
                 {
                     name: 'preload-module',
@@ -268,6 +374,7 @@
                 },
             ];
             //let timer;
+            //hideSpinner();
             hideShowEle(ddlGenratorType.value);
             ddlGenratorType.addEventListener('change', () => {
                 //  clearTimeout(timer);
@@ -278,7 +385,9 @@
 
             });
             document.getElementById('btnRefresh').addEventListener('click', (event) => {
+
                 //setModuleOption();
+                showSpinner();
                 vscode.postMessage({
                     command: 'refresh',
                     // data: browseFolder
@@ -311,6 +420,7 @@
             });
             document.getElementById("btnsubmit").addEventListener("click", function (event) {
                 event.preventDefault();
+                showSpinner();
                 const obj = {
                     genrateType: ddlGenratorType.value,
 
@@ -341,11 +451,21 @@
                         command: 'submit',
                         data: obj
                     });
+                    setTimeout(() => {
+                        hideSpinner();
+                        vscode.postMessage({
+                            command: 'panelClose',
+                            // data: browseFolder
+                        });
+                    }, 5000);
                 } else {
                     vscode.postMessage({
                         command: 'validation',
                         //data: obj
                     });
+                    setTimeout(() => {
+                        hideSpinner();
+                    }, 1000);
                 }
             });
             window.addEventListener('message', event => {
@@ -357,6 +477,9 @@
                     case 'populateddlModule':
                         moduleInfo = message.data;
                         setModuleOption();
+                        setTimeout(() => {
+                            hideSpinner();
+                        }, 3000);
                         break;
 
                     case "i18nFilePath":
@@ -426,6 +549,7 @@
                     optionElement.textContent = option.id;
                     ddlSubModule.appendChild(optionElement);
                 });
+
             }
 
             function hideShowEle(value) {
@@ -524,7 +648,12 @@
                     input.value = ""; // Clears the value of each <input>
                 });
             }
-
+            function hideSpinner() {
+                spinner.style.display = 'none';
+            }
+            function showSpinner() {
+                spinner.style.display = 'block';
+            }
         });
     </script>
 </body>
