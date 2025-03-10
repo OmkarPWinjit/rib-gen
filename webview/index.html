@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIB Genrator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .form-container input,
+        .form-container select,
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        #groupbutton {
+            width: 100%;
+            text-align: center;
+        }
+
+        .innerbutton {
+            display: inline-block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #007acc;
+            /* VS Code blue color */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Container for spinner */
+        .spinner-container {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            /* Align horizontally */
+            align-items: center;
+            /* Align vertically */
+
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007acc;
+            /* VS Code blue color */
+        }
+
+        .button {
+            background-color: #04AA6D;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 9px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .button1:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #04AA6D;
+        }
+
+        .button1 {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .button2:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #008CBA;
+        }
+
+        .button2 {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        .button3:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #f44336;
+        }
+
+        .button3 {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .button4:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #e7e7e7;
+        }
+
+        .button4 {
+            background-color: #e7e7e7;
+            color: black;
+        }
+
+        span {
+            word-wrap: break-word;
+            overflow: hidden;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h2>RIB Generator</h2>
+
+        <form id="containerGenerator">
+            <label for="ddlGenratorType">Select Generator Type <span style="color: red;font-size: large;"> *
+                </span></label>
+            <select id="ddlGenratorType" name="ddlGenratorType" required>
+                <option value="preload-module">Preload Module </option>
+                <option value="content-module">Content Module </option>
+                <option value="entity-genrator">Entity Generator</option>
+                <option value="component-genrator">Component Generator</option>
+                <option value="container-genrator">Container Generator</option>
+                <option value="class-genrator">Class Generator</option>
+                <option value="enum-genrator">Enum Generator</option>
+                <option value="interface-genrator">Interface Generator</option>
+                <option value="pipe-genrator">Pipe Generator</option>
+                <option value="service-genrator">Service Generator</option>
+                <option value="translation-entity-genrator">Translation Entity Generator</option>
+                <option value="auxiliary-module-genrator">Auxiliary Module Generator </option>
+                <option value="characteristics-entity-genrator">Characteristics Entity Generator </option>
+                <option value="pdf-viewer-container-genrator">Pdf Viewer Container Generator </option>
+
+            </select>
+
+            <label for="txtName">Name <span style="color: red;"> * </span>:</label>
+            <input type="text" id="txtName" name="txtName" required>
+
+            <label for="ddlModule">Select Module <span style="color: red;"> * </span>:</label>
+            <select id="ddlModule" name="ddlModule" required>
+                <!-- First dropdown options will be populated here -->
+            </select>
+
+            <label for="ddlSubModule">Select submodule <span style="color: red;"> * </span>:</label>
+            <select id="ddlSubModule" name="ddlSubModule" required>
+                <!-- Second dropdown options will be populated dynamically based on the first dropdown -->
+            </select>
+
+            <div>
+                <label for="i18nfile">Select a translation file:</label>
+                <button id="i18nfile" name="i18nfile">Browse File </button>
+                <Span id="i18nfilePath" style="margin:5px 0px;"></Span>
+            </div>
+
+
+
+
+            <label for="ddlStyleType">Select Style Type:</label>
+            <select id="ddlStyleType" name="ddlStyleType" required>
+                <option value="scss">scss </option>
+                <option value="css">css </option>
+                <option value="sass">sass </option>
+                <option value="less">less </option>
+                <option value="none">none </option>
+
+            </select>
+
+            <label for="ddlNoStoryType">Do You Want Story Component :</label>
+            <select id="ddlNoStoryType" name="ddlNoStoryType" required>
+                <option value="true">Yes </option>
+                <option value="false">No </option>
+            </select>
+
+            <div>
+                <label for="browseFolder">Select a Folder Path:</label>
+                <button id="browseFolder" name="browseFolder">Browse Folder </button>
+                <Span id="browseFolderPath" style="margin:5px 0px;"></Span>
+            </div>
+
+            <label for="uuid">Uuid <span style="color: red;"> * </span>:</label>
+            <input type="text" id="uuid" name="uuid" required>
+
+            <label for="permission">Permission <span style="color: red;"> * </span>:</label>
+            <input type="text" id="permission" name="permission" required>
+
+            <label for="pKey1Field">pKey1Field <span style="color: red;"> * </span>:</label>
+            <input type="text" id="pKey1Field" name="pKey1Field" required>
+
+            <label for="sectionId">sectionId <span style="color: red;"> * </span>:</label>
+            <input type="text" id="sectionId" name="pKey1Field" required>
+
+            <label for="gridTitle">Grid Title <span style="color: red;"> * </span>:</label>
+            <input type="text" id="gridTitle" name="gridTitle" required>
+
+
+            <label for="gridName">Grid Name <span style="color: red;"> * </span>:</label>
+            <input type="text" id="gridName" name="gridName" required>
+
+
+            <label for="gridUuid">Grid uuid <span style="color: red;"> * </span>:</label>
+            <input type="text" id="gridUuid" name="gridUuid" required>
+
+            <label for="formTitle">Form Title:</label>
+            <input type="text" id="formTitle" name="gridTitle" required>
+
+            <label for="formUuid">Form uuid:</label>
+            <input type="text" id="formUuid" name="formUuid" required>
+
+
+
+
+
+            <label for="ddlEntityType">Select Entity Type <span style="color: red;"> * </span>:</label>
+            <select id="ddlEntityType" name="ddlEntityType" required>
+                <option value="flatRootItem">flatRootItem</option>
+                <option value="flatNodeItem">flatNodeItem</option>
+                <option value="flatLeafItem">flatLeafItem</option>
+                <option value="hierarchicalRootItem">hierarchicalRootItem</option>
+                <option value="hierarchicalNodeItem">hierarchicalNodeItem</option>
+                <option value="hierarchicalLeafItem">hierarchicalLeafItem</option>
+
+
+
+            </select>
+            <label for="ddlUseOtherConfig">Would you like to add entity configuration? :</label>
+            <select id="ddlUseOtherConfig" name="ddlUseOtherConfig" required>
+                <option value="false">No </option>
+                <option value="true">Yes </option>
+
+            </select>
+            <div id="otherconfig">
+                <h4>Other Configuration :</h4>
+                <div id="entityInfo">
+                    <label for="entityInfofile">Select a Entity file:</label>
+                    <button id="entityInfofile" name="entityInfofile" class="BrowseOtherConfig">Browse File
+                    </button>
+                    <Span id="entityInfofilePath" style="margin:5px 0px;"></Span>
+                </div>
+                <label for="ddlEntityInfoType">Select Entity :</label>
+                <select id="ddlEntityInfoType" name="ddlEntityInfoType">
+                </select>
+                <div id="entityCompleteInfo">
+                    <label for="entityCompleteInfofile">Select Complete Entity file:</label>
+                    <button id="entityCompleteInfofile" name="entityCompleteInfofile" class="BrowseOtherConfig">Browse
+                        File
+                    </button>
+                    <Span id="entityCompleteInfofilePath" style="margin:5px 0px;"></Span>
+                </div>
+                <label for="ddlCompleteEntityInfoType">Select Complete Entity :</label>
+                <select id="ddlCompleteEntityInfoType" name="ddlCompleteEntityInfoType">
+                </select>
+                <div id="parentEntitySection">
+                    <div id="parentEntityInfo">
+                        <label for="parentEntityInfofile">Select Parent Entity file:</label>
+                        <button id="parentEntityInfofile" name="parentEntityInfofile" class="BrowseOtherConfig">Browse
+                            File
+                        </button>
+                        <Span id="parentEntityInfoPath" style="margin:5px 0px;"></Span>
+                    </div>
+                    <label for="ddlparentEntityInfoType">Select Parent Entity :</label>
+                    <select id="ddlparentEntityInfoType" name="ddlEntityInfoType">
+                    </select>
+                    <div id="parentEntityCompleteInfo">
+                        <label for="parentEntityCompleteInfofile">Select Parent Complete Entity file:</label>
+                        <button id="parentEntityCompleteInfofile" name="parentEntityCompleteInfofile"
+                            class="BrowseOtherConfig">Browse File
+                        </button>
+                        <Span id="parentEntityCompleteInfofilePath" style="margin:5px 0px;"></Span>
+                    </div>
+                    <label for="ddlParentCompleteEntityInfoType">Select Parent Complete Entity :</label>
+                    <select id="ddlParentCompleteEntityInfoType" name="ddlParentCompleteEntityInfoType">
+                    </select>
+
+                    <div id="parentServiceInfo">
+                        <label for="parentServiceInfofile">Select Parent Service file:</label>
+                        <button id="parentServiceInfofile" name="parentEntityCompleteInfofile"
+                            class="BrowseOtherConfig">Browse File
+                        </button>
+                        <Span id="parentServiceInfofilePath" style="margin:5px 0px;"></Span>
+                    </div>
+                    <label for="ddlParentServiceInfoType">Select Parent Service :</label>
+                    <select id="ddlParentServiceInfoType" name="ddlParentCompleteEntityInfoType">
+                    </select>
+                </div>
+                <label for="dtoName">DTO Name:</label>
+                <input type="text" id="dtoName" name="dtoName" required>
+
+
+
+                <label for="apiUrl">API Url:</label>
+                <input type="text" id="apiUrl" name="apiUrl" required>
+
+                <label for="endPoint">End Point:</label>
+                <input type="text" id="endPoint" name="endPoint" required>
+
+                <label for="ddlusePost">Use Post :</label>
+                <select id="ddlusePost" name="ddlusePost" required>
+                    <option value="true">Yes </option>
+                    <option value="false">No </option>
+                </select>
+
+                <label for="deleteEndPoint">Delete End Point:</label>
+                <input type="text" id="deleteEndPoint" name="deleteEndPoint" required>
+
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" name="itemName" required>
+            </div>
+
+            <div id="spinner">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+
+                </div>
+                <div class="spinner-container">
+                    <div class="message">Please hold on while the loading process is completed...</div>
+                </div>
+            </div>
+            <div id="groupbutton">
+
+                <div class="innerbutton"><button type="button" id="btnRefresh" name="btnRefresh"
+                        class="button button2">Refresh </button></div>
+                <div class="innerbutton"><button type="button" id="btnsubmit" name="btnsubmit"
+                        class="button button1">Submit</button></div>
+                <div class="innerbutton"><button id="btnCancel" class="button button3">Cancel</button></div>
+            </div>
+
+            <!-- <div class="spinner-container">
+                <div class="spinner"></div>
+                <div class="message">Please wait while we process your request...</div>
+            </div> -->
+        </form>
+    </div>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            let moduleInfo = {};
+            let browseFolder = '';
+            const vscode = acquireVsCodeApi();
+            const ddlGenratorType = document.getElementById("ddlGenratorType");
+            const txtName = document.getElementById("txtName");
+            const i18nfilePath = document.getElementById("i18nfilePath");
+            const ddlStyleType = document.getElementById("ddlStyleType");
+            const ddlNoStoryType = document.getElementById("ddlNoStoryType");
+            const browseFolderPath = document.getElementById("browseFolderPath");
+            const uuid = document.getElementById("uuid");
+            const permission = document.getElementById("permission");
+            const pKey1Field = document.getElementById("pKey1Field");
+            const sectionId = document.getElementById("sectionId");
+
+            const gridTitle = document.getElementById("gridTitle");
+            const gridName = document.getElementById("gridName");
+            const gridUuid = document.getElementById("gridUuid");
+            const formTitle = document.getElementById("formTitle");
+            const formUuid = document.getElementById("formUuid");
+
+            const ddlModule = document.getElementById("ddlModule");
+            const ddlSubModule = document.getElementById("ddlSubModule");
+            const ddlEntityType = document.getElementById("ddlEntityType");
+            const spinner = document.getElementById("spinner");
+            const genratorData = [
+                {
+                    name: 'preload-module',
+                    control: ['txtName'],
+                    validateControl: ['txtName']
+                },
+                {
+                    name: 'content-module',
+                    control: ['txtName', 'ddlModule', 'i18nfilePath', 'i18nfile'],
+                    validateControl: ['txtName', 'ddlModule']
+                },
+                {
+                    name: 'entity-genrator',
+                    control: ['gridTitle', 'gridName', 'gridUuid'
+                        , 'formTitle', 'formUuid',
+                        'ddlModule', 'ddlSubModule', 'ddlEntityType', 'ddlUseOtherConfig'
+                    ],
+                    validateControl: ['gridTitle', 'gridName', 'gridUuid', 'ddlModule', 'ddlSubModule', 'ddlEntityType', 'ddlUseOtherConfig']
+                },
+                {
+                    name: 'component-genrator',
+                    control: ['txtName', 'ddlStyleType', 'ddlNoStoryType',
+                        'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'container-genrator',
+                    control: ['txtName', 'ddlStyleType', 'ddlNoStoryType',
+                        'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName',]
+                },
+                {
+                    name: 'class-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'enum-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'interface-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'pipe-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'service-genrator',
+                    control: ['txtName', 'ddlModule', 'ddlSubModule', 'browseFolderPath', 'browseFolder'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName']
+                },
+                {
+                    name: 'translation-entity-genrator',
+                    control: ['uuid', 'ddlModule', 'ddlSubModule'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'uuid']
+                },
+                {
+                    name: 'auxiliary-module-genrator',
+                    control: ['ddlModule', 'ddlSubModule', 'i18nfilePath', 'i18nfile'],
+                    validateControl: ['ddlModule', 'ddlSubModule']
+                },
+                {
+                    name: 'characteristics-entity-genrator',
+                    control: ['txtName', 'uuid', 'permission', 'pKey1Field', 'sectionId', 'ddlModule', 'ddlSubModule'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'txtName', 'uuid', 'permission', 'pKey1Field', 'sectionId']
+
+                },
+                {
+                    name: 'pdf-viewer-container-genrator',
+                    control: ['uuid', 'ddlModule', 'ddlSubModule'],
+                    validateControl: ['ddlModule', 'ddlSubModule', 'uuid']
+                },
+            ];
+            const ohterConfig = [
+                {
+                    id: 'entityInfofile',
+                    mainId: 'entityInfo',
+                    type: 'interface',
+                    control: ['ddlEntityInfoType', 'entityInfofilePath']
+                },
+                {
+                    id: 'entityCompleteInfofile',
+                    mainId: 'entityCompleteInfo',
+                    type: 'class',
+                    control: ['ddlCompleteEntityInfoType', 'entityCompleteInfofilePath']
+                },
+
+                {
+                    id: 'parentEntityInfofile',
+                    mainId: 'parentEntityInfo',
+                    type: 'interface',
+                    control: ['ddlparentEntityInfoType', 'parentEntityInfoPath']
+                },
+                {
+                    id: 'parentEntityCompleteInfofile',
+                    mainId: 'parentEntityCompleteInfo',
+                    type: 'class',
+                    control: ['ddlParentCompleteEntityInfoType', 'parentEntityCompleteInfofilePath']
+                },
+                {
+                    id: 'parentServiceInfofile',
+                    mainId: 'parentServiceInfo',
+                    type: 'class',
+                    control: ['ddlParentServiceInfoType', 'parentServiceInfofilePath']
+                }
+
+            ]
+            //let timer;
+            //hideSpinner();
+            hideShowEle(ddlGenratorType.value);
+            hideShowOtherConfig();
+            hideShowParentEntitySection();
+            ddlGenratorType.addEventListener('change', () => {
+                //  clearTimeout(timer);
+                //timer = setTimeout(() => {
+                hideShowEle(ddlGenratorType.value);
+                //}, 1000);
+
+
+            });
+            document.getElementById('btnRefresh').addEventListener('click', (event) => {
+
+                //setModuleOption();
+                showSpinner();
+                vscode.postMessage({
+                    command: 'refresh',
+                    // data: browseFolder
+                });
+            });
+            document.getElementById('btnCancel').addEventListener('click', (event) => {
+                //setModuleOption();
+                vscode.postMessage({
+                    command: 'close',
+                    // data: browseFolder
+                });
+            });
+            document.getElementById('i18nfile').addEventListener('click', (event) => {
+                event.preventDefault();
+
+                vscode.postMessage({
+                    command: 'Browsei18nFile',
+
+                });
+
+            });
+            document.getElementById('browseFolder').addEventListener('click', (event) => {
+                event.preventDefault();
+
+                vscode.postMessage({
+                    command: 'browseFolderPath',
+                    data: browseFolder
+                });
+
+            });
+            const buttons = document.getElementsByClassName('BrowseOtherConfig');
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const id = event.target.id;
+                    const obj = ohterConfig.find((x) => x.id === event.target.id);
+                    const type = obj.type;
+                    browseFile(id, type);
+                });
+            }
+
+            document.getElementById("btnsubmit").addEventListener("click", function (event) {
+                event.preventDefault();
+                showSpinner();
+                const obj = {
+                    genrateType: ddlGenratorType.value,
+
+                    name: txtName.value,
+                    i18FilePath: i18nfilePath.innerText,
+                    styleType: ddlStyleType.value,
+                    isGenrateStoryBookComponent: ddlNoStoryType.value === "true" ? true : false,
+                    browseFolderPath: browseFolderPath.innerText,
+                    uuid: uuid.value,
+                    permission: permission.value,
+                    pKey1Field: pKey1Field.value,
+                    sectionId: sectionId.value,
+                    gridTitle: gridTitle.value,
+                    gridName: gridName.value,
+                    gridUuid: gridUuid.value,
+                    formTitle: formTitle.value,
+                    formUuid: formUuid.value,
+                    module: ddlModule.value,
+                    subModule: ddlSubModule.value,
+                    entityType: ddlEntityType.value,
+                    isUseOtherConfig: getValue('ddlUseOtherConfig'),
+                    otherconfig: {
+                        entityInfo: {
+                            name: getValue('ddlEntityInfoType'),
+                            path: getValue('entityInfofilePath')
+                        },
+                        completeEntityInfo: {
+                            name: getValue('ddlCompleteEntityInfoType'),
+                            path: getValue('entityCompleteInfofilePath')
+                        },
+                        pEntityInfo: {
+                            name: getValue('ddlparentEntityInfoType'),
+                            path: getValue('parentEntityInfoPath')
+                        },
+                        pCompleteEntityInfo: {
+                            name: getValue('ddlParentCompleteEntityInfoType'),
+                            path: getValue('parentEntityCompleteInfofilePath')
+                        },
+                        parentDataServiceInfo: {
+                            name: getValue('ddlParentServiceInfoType'),
+                            path: getValue('parentServiceInfofilePath')
+                        },
+                        dto: getValue('dtoName'),
+                        apiUrl: getValue('apiUrl'),
+                        endPoint: getValue('endPoint'),
+                        usePost: getValue('ddlusePost'),
+                        deleteEndPoint: getValue('deleteEndPoint'),
+                        itemName: getValue('itemName')
+                    }
+                };
+                //const i18nfile = document.getElementById("i18nfile").value;
+
+                // Send data back to VS Code extension
+                //const vscode = acquireVsCodeApi();
+                if (isValidate(ddlGenratorType.value)) {
+                    vscode.postMessage({
+                        command: 'submit',
+                        data: obj
+                    });
+                    setTimeout(() => {
+                        hideSpinner();
+                        vscode.postMessage({
+                            command: 'panelClose',
+                            // data: browseFolder
+                        });
+                    }, 5000);
+                } else {
+                    vscode.postMessage({
+                        command: 'validation',
+                        //data: obj
+                    });
+                    setTimeout(() => {
+                        hideSpinner();
+                    }, 1000);
+                }
+            });
+            window.addEventListener('message', event => {
+                const message = event.data; // The message sent from the extension
+                switch (message.command) {
+                    case 'reset':
+                        reset();
+                        break;
+                    case 'populateddlModule':
+                        moduleInfo = message.data;
+                        setModuleOption();
+                        setTimeout(() => {
+                            hideSpinner();
+                        }, 3000);
+                        break;
+
+                    case "i18nFilePath":
+                        const i18nfilePath = document.getElementById("i18nfilePath");
+                        i18nfilePath.innerText = message.data;
+                        break;
+
+                    case "FolderPath":
+                        const browseComponentFolderPath = document.getElementById("browseFolderPath");
+                        browseComponentFolderPath.innerText = message.data;
+                        break;
+                    case 'otherConfigFilePath':
+                        const otherConfigData = message.data;
+                        setOtherConfigOption(otherConfigData);
+
+                        break;
+
+                }
+            });
+
+            document.getElementById("ddlUseOtherConfig").addEventListener("change", function () {
+
+                hideShowOtherConfig();
+            });
+
+            document.getElementById("ddlEntityType").addEventListener("change", function () {
+
+                hideShowParentEntitySection();
+
+            });
+
+            // Handle change event of primary dropdown
+            document.getElementById("ddlModule").addEventListener("change", function () {
+
+                setSubModuleOption();
+            });
+
+            document.getElementById("ddlSubModule").addEventListener("change", function () {
+
+                const ddlModule = document.getElementById("ddlModule");
+
+                const selectedCategory = ddlModule.value;
+
+                const ddlSubModule = document.getElementById("ddlSubModule");
+
+
+                let dependentData = moduleInfo.modules.find((x) => x.name === selectedCategory);
+                const submodule = dependentData.submodule.find((x) => x.name === ddlSubModule.value);
+                browseFolder = submodule.path;
+
+
+            });
+
+
+
+            function setModuleOption() {
+                const ddlSubModule = document.getElementById("ddlModule");
+
+                // primaryDropdown.innerHTML = ''; // Clear existing options
+                moduleInfo.modules.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.id;
+                    optionElement.textContent = option.name;
+                    ddlSubModule.appendChild(optionElement);
+                });
+                setSubModuleOption();
+            }
+            function setSubModuleOption() {
+                const ddlModule = document.getElementById("ddlModule");
+
+                const selectedCategory = ddlModule.value;
+
+                const ddlSubModule = document.getElementById("ddlSubModule");
+                ddlSubModule.innerHTML = ''; // Clear existing options
+
+                let dependentData = moduleInfo.modules.find((x) => x.name === selectedCategory);
+
+
+                dependentData.submodule.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.name;
+                    optionElement.textContent = option.id;
+                    ddlSubModule.appendChild(optionElement);
+                });
+
+            }
+
+            function hideShowEle(value) {
+                const allControl = ['txtName', 'i18nfile', 'i18nfilePath', 'ddlStyleType'
+                    , 'ddlNoStoryType', 'browseFolder', 'browseFolderPath', 'uuid', 'permission',
+                    'pKey1Field', 'sectionId', 'gridTitle', 'gridName',
+                    'gridUuid', 'formTitle', 'formUuid',
+                    'ddlModule', 'ddlSubModule', 'ddlEntityType', 'ddlUseOtherConfig'
+                ];
+
+                allControl.forEach((item) => {
+                    hideElement(item);
+                })
+
+                const showFiled = genratorData.find((x) => x.name === value);
+                if (showFiled) {
+                    showFiled.control.forEach((item) => {
+                        showElement(item);
+                    })
+
+                }
+
+            }
+
+            function hideElement(id) {
+                const element = document.getElementById(id);
+                const labels = document.querySelectorAll('label');
+
+                // Filter labels that have a 'for' attribute with a value
+                const labelsWithFor = Array.from(labels).filter(label => label.hasAttribute('for') && label.getAttribute('for') === id);
+                labelsWithFor.forEach((item) => {
+                    item.style.display = 'none';
+                });
+                //if (x.style.display === "block") {
+                element.style.display = 'none';
+                element.value = "";
+                if (id.includes("Path")) {
+                    element.innerText = "";
+                }
+                //}
+            }
+            function isValidate(name) {
+                let isValid = true;
+                const showFiled = genratorData.find((x) => x.name === name);
+                if (showFiled) {
+                    showFiled.validateControl.forEach((item) => {
+                        if (!validateElement(item)) {
+                            isValid = false;
+                        }
+                    });
+                    return isValid;
+
+                }
+            }
+            function validateElement(id) {
+                const element = document.getElementById(id);
+                if (element.value) {
+                    return true
+                } else {
+                    return false;
+                }
+            }
+            function showElement(id) {
+                const element = document.getElementById(id);
+                const labels = document.querySelectorAll('label');
+
+                // Filter labels that have a 'for' attribute with a value
+                const labelsWithFor = Array.from(labels).filter(label => label.hasAttribute('for') && label.getAttribute('for') === id);
+                labelsWithFor.forEach((item) => {
+                    item.style.display = 'block';
+                });
+                //if (x.style.display === "none") {
+                element.style.display = 'block';
+                //}
+                element.value = "";
+                if (id.includes("Path")) {
+                    element.innerText = "";
+                }
+            }
+
+            function reset() {
+                // Get all <span> elements
+                const spans = document.querySelectorAll('span');
+
+                // Get all <input> elements
+                const inputs = document.querySelectorAll('input');
+
+                // Convert NodeList to Array (optional, if you prefer working with arrays)
+                const spansArray = Array.from(spans);
+                const inputsArray = Array.from(inputs);
+                spans.forEach(span => {
+                    span.innerText = ""; // Clears the text of each <span>
+                });
+
+                inputs.forEach(input => {
+                    input.value = ""; // Clears the value of each <input>
+                });
+            }
+            function hideSpinner() {
+                spinner.style.display = 'none';
+            }
+            function showSpinner() {
+                spinner.style.display = 'block';
+            }
+            function browseFile(id, type) {
+
+                vscode.postMessage({
+                    command: 'BrowseOtherConfigFile',
+                    data: { id, type }
+                });
+            }
+            function setOtherConfigOption(data) {
+                const otherConfigControl = ohterConfig.find((x) => x.id === data.id);
+                vscode.postMessage({
+                    command: 'test',
+                    data: data
+                });
+                otherConfigControl.control.forEach((item) => {
+                    const element = document.getElementById(item);
+                    if (item.includes("Path")) {
+                        //const element = document.getElementById(item);
+                        element.innerText = "";
+                    } else {
+                        element.innerHTML = ''; // Clear existing options
+                    }
+                });
+                if (otherConfigControl) {
+                    otherConfigControl.control.forEach((item) => {
+                        //showElement(item);
+                        const element = document.getElementById(item);
+                        if (item.includes("Path")) {
+                            //const element = document.getElementById(item);
+                            element.innerText = data.path;
+                        } else {
+                            data.names.forEach(option => {
+                                const optionElement = document.createElement('option');
+                                optionElement.value = option;
+                                optionElement.textContent = option;
+                                element.appendChild(optionElement);
+                            });
+                        }
+                    })
+                }
+
+
+
+            }
+
+            function getValue(id) {
+                const element = document.getElementById(id);
+                if (id.includes("Path")) {
+                    return element.innerText;
+                } else {
+                    return element.value;
+                }
+            }
+
+            function hideShowParentEntitySection() {
+                const ddlEntityType = document.getElementById("ddlEntityType");
+                const parentEntitySection = document.getElementById("parentEntitySection");
+
+
+                if (ddlEntityType.value === "flatRootItem" || ddlEntityType.value === "hierarchicalRootItem") {
+
+                    parentEntitySection.style.display = 'none';
+                } else {
+
+                    parentEntitySection.style.display = 'block';
+                }
+            }
+
+            function hideShowOtherConfig() {
+                const ddlUseOtherConfig = document.getElementById("ddlUseOtherConfig");
+                const otherconfig = document.getElementById("otherconfig");
+                if (ddlUseOtherConfig.value === "true") {
+                    otherconfig.style.display = 'block';
+                } else {
+                    otherconfig.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
